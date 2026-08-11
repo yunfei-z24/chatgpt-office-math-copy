@@ -13,6 +13,10 @@
 [中文说明](README.zh-CN.md) · [Report a bug](../../issues/new?template=bug_report.md) · [Request a feature](../../issues/new?template=feature_request.md)
 </div>
 
+<div align="center">
+  <img src="assets/overview.webp" width="900" alt="ChatGPT Office Math Copy feature overview" />
+</div>
+
 ## Why this exists
 
 ChatGPT's web math renderer can display high-quality two-dimensional formulas, but ordinary browser copy/paste may flatten the mathematical structure before it reaches Microsoft Office. This project restores a practical workflow for researchers, students, engineers, and anyone who frequently moves technical content from ChatGPT into Word or PowerPoint.
@@ -110,6 +114,7 @@ The current source code contains **no remote API calls, telemetry, analytics SDK
 .
 ├── assets/
 │   ├── logo.svg
+│   ├── overview.webp
 │   └── demo.gif
 ├── content-core.js
 ├── content-dom.js
