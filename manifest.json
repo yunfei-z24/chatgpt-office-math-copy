@@ -1,0 +1,15 @@
+{
+  "manifest_version": 3,
+  "name": "ChatGPT Office Math Copy",
+  "version": "0.5.0",
+  "description": "Batch copy ChatGPT text and formulas to Word/PowerPoint.",
+  "permissions": ["clipboardRead", "clipboardWrite"],
+  "host_permissions": ["https://chatgpt.com/*", "https://chat.openai.com/*"],
+  "content_scripts": [
+    {
+      "matches": ["https://chatgpt.com/*", "https://chat.openai.com/*"],
+      "js": ["content.js"],
+      "css": ["style.css"]
+    }
+  ]
+}
