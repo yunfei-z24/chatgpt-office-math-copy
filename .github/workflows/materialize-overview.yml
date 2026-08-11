@@ -39,3 +39,5 @@ jobs:
             git commit -m 'assets: add README overview image'
             git push origin HEAD:main
           fi
+
+# v1.0.0 README overview asset materialization
