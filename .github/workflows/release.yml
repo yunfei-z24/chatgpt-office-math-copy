@@ -1,3 +1,4 @@
+# Release workflow for the first stable public build.
 name: Publish v1.0.0
 
 on:
