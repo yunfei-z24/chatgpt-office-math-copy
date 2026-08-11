@@ -1,152 +1,171 @@
+<div align="center">
+  <img src="assets/logo.svg" width="128" alt="ChatGPT Office Math Copy logo" />
+
 # ChatGPT Office Math Copy
 
-将 ChatGPT 网页中的**正文 + 多个数学公式**一次性复制到 Microsoft Word / PowerPoint，并尽可能保留为 Office 可继续编辑的数学结构。
+**Batch-copy ChatGPT text and multiple math formulas into Microsoft Word / PowerPoint — without copying formulas one by one.**
 
-> 当前版本：`v0.5.0`
+[![Version](https://img.shields.io/badge/version-v1.0.0-0A7EA4)](CHANGELOG.md)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+[![Chrome MV3](https://img.shields.io/badge/Chrome-Manifest%20V3-4285F4)](manifest.json)
+[![Privacy](https://img.shields.io/badge/privacy-local%20processing-success)](PRIVACY.md)
 
-## 为什么做这个项目
+[中文说明](README.zh-CN.md) · [Report a bug](../../issues/new?template=bug_report.md) · [Request a feature](../../issues/new?template=feature_request.md)
+</div>
 
-过去，ChatGPT 网页中的二维公式可以较稳定地直接复制到 Word / PowerPoint，并保持接近网页端的二维排版。随着 ChatGPT 前端数学渲染与复制链路变化，普通复制有时只保留文本层，导致分式、上下标、偏导等结构丢失。
+## Why this exists
 
-本扩展尝试修复这条链路：
+ChatGPT's web math renderer can display high-quality two-dimensional formulas, but ordinary browser copy/paste may flatten the mathematical structure before it reaches Microsoft Office. This project restores a practical workflow for researchers, students, engineers, and anyone who frequently moves technical content from ChatGPT into Word or PowerPoint.
 
-**ChatGPT 页面选区 → 检测选区内全部公式 → 提取 MathML / 数学源 → 重建富文本剪贴板 → Word / PowerPoint**
+Instead of clicking and copying each equation individually, **select an entire section containing prose, multiple formulas, numbering, and line breaks, then copy it once**.
 
-与“点击一个公式、复制一次”的扩展不同，本项目的目标是：
+<div align="center">
+  <img src="assets/demo.gif" width="900" alt="Batch copy demo" />
+</div>
 
-- 一次框选整段内容；
-- 同时包含正文、多个公式、编号、段落；
-- 一次复制到 Office；
-- 尽可能保留公式为可编辑数学结构，而不是图片。
+## Key features
 
-## 当前功能
+- **Batch copy** — copy prose and multiple equations in one operation.
+- **Editable Office math** — reconstructs formulas as Presentation MathML where possible, rather than images.
+- **Selection-aware** — detects formulas that intersect the real browser selection instead of relying only on cloned DOM fragments.
+- **Multiple math sources** — supports MathML, KaTeX, MathJax, TeX annotations, `data-latex`, `aria-label`, and fallback math-node scanning.
+- **Scientific notation support** — fractions, superscripts/subscripts, roots, integrals, sums, Greek letters, common matrices/alignment environments, and more.
+- **Local processing** — no telemetry, no analytics SDK, no remote conversion service, and no chat-content upload.
+- **Diagnostic feedback** — reports how many formulas intersected the selection and how many were actually written to the clipboard.
 
-- 批量复制选区中的正文与多个公式；
-- 未框选时，可复制最近一条 ChatGPT 回答；
-- 在真实页面 DOM 中检测与选区相交的公式；
-- 支持 MathML、KaTeX、MathJax 及部分自定义数学节点；
-- 尝试从 MathML、`annotation`、`data-latex`、`aria-label` 等来源恢复数学表达式；
-- 将常见 LaTeX 数学结构转换为 Presentation MathML；
-- 支持分式、上下标、根式、积分、求和、希腊字母、常见矩阵/对齐环境等；
-- Toast 显示“页面相交公式数 / 实际写入公式数”，便于诊断兼容性。
+## Workflow
 
-## 安装
+**ChatGPT selection → locate all math nodes → extract/reconstruct math structure → build HTML + MathML clipboard payload → paste into Word / PowerPoint**
 
-目前项目以 Chrome / Chromium Manifest V3 扩展形式发布。
+## Installation
 
-1. 下载或克隆本仓库；
-2. Chrome 打开 `chrome://extensions/`；
-3. 开启“开发者模式”；
-4. 点击“加载已解压的扩展程序”；
-5. 选择本仓库根目录；
-6. 刷新 ChatGPT 页面。
+### Option A — v1.0.0 release package
 
-## 使用
+1. Download `chatgpt-office-math-copy-v1.0.0.zip` from the latest GitHub Release.
+2. Extract it to a permanent folder.
+3. Open `chrome://extensions/` in Chrome or another Chromium browser.
+4. Enable **Developer mode**.
+5. Click **Load unpacked**.
+6. Select the extracted extension folder.
+7. Refresh ChatGPT.
 
-1. 在 ChatGPT 网页中框选一整段内容；
-2. 选区可以同时包含正文、多个二维公式和多个段落；
-3. 点击右下角 **“复制整段到 Office”**；
-4. 到 Word 或 PowerPoint 中直接粘贴。
+### Option B — clone the repository
 
-如果没有框选内容，按钮会尝试复制最近一条 ChatGPT 回答。
+```bash
+git clone https://github.com/yunfei-z24/chatgpt-office-math-copy.git
+```
 
-## 诊断提示
+Then load the repository root using **Load unpacked** in `chrome://extensions/`.
 
-扩展会显示类似：
+## Usage
 
-> 已批量复制选区：页面相交 3 个公式，实际写入 3 个公式（实时 DOM → MathML）
+1. Open ChatGPT in Chrome / Edge.
+2. Select a section containing text and one or more equations.
+3. Click **Copy selection to Office** in the lower-right corner.
+4. Paste directly into Word or PowerPoint.
 
-含义：
+If there is no active selection, the extension attempts to use the most recent assistant response.
 
-- `页面相交 3 / 实际写入 3`：公式识别与替换均成功；
-- `页面相交 3 / 实际写入 1`：已找到公式，但复制重建时仍有节点未成功写入；
-- `页面相交 1`：部分公式采用了尚未支持的 DOM / 数学组件；
-- `页面相交 0`：当前 ChatGPT 数学结构未被识别，需要进一步适配。
+### Diagnostic toast
 
-## 权限说明
+A successful batch operation may show:
 
-`manifest.json` 当前使用：
+> Batch copied: 3 formulas intersected, 3 formulas written (live DOM → MathML)
+
+Interpretation:
+
+- **3 / 3** — detection and replacement succeeded.
+- **3 / 1** — formulas were found, but some could not be rebuilt into the clipboard payload.
+- **1 / ...** — some ChatGPT formula nodes use an unsupported DOM structure.
+- **0 / ...** — the current ChatGPT math renderer needs a new compatibility adapter.
+
+## Compatibility
+
+| Component | Status |
+|---|---|
+| Chrome / Chromium | Primary target |
+| Microsoft Word | Supported target |
+| Microsoft PowerPoint | Supported target |
+| Inline math | Supported |
+| Display math | Supported |
+| Multiple formulas in one selection | Core feature |
+| Complex custom TeX macros | Partial / best effort |
+
+Office behavior can vary by version because clipboard HTML/MathML parsing is handled by Office itself.
+
+## Privacy and permissions
+
+The extension requests:
 
 - `clipboardRead`
 - `clipboardWrite`
-- `https://chatgpt.com/*`
-- `https://chat.openai.com/*`
+- access to `https://chatgpt.com/*`
+- access to `https://chat.openai.com/*`
 
-扩展代码当前**不包含任何网络请求、遥测、分析 SDK、远程代码下载或用户数据上传逻辑**。处理过程在浏览器本地完成。
+The current source code contains **no remote API calls, telemetry, analytics SDKs, external conversion servers, or chat-content upload logic**. Processing is performed locally in the browser. See [PRIVACY.md](PRIVACY.md).
 
-详见 [PRIVACY.md](PRIVACY.md)。
-
-## 已知限制
-
-1. ChatGPT 是持续更新的 Web 应用，DOM 与数学渲染组件变化可能导致兼容性失效；
-2. 当前内置 LaTeX → MathML 转换器只覆盖常见科研公式子集，不是完整 TeX 引擎；
-3. Word 与 PowerPoint 对剪贴板 MathML / HTML 的解析行为可能因 Office 版本而异；
-4. 特殊宏、自定义命令、复杂多行环境可能需要额外适配；
-5. 本项目目前仍处于实验性阶段，建议在重要文档中粘贴后检查公式结构。
-
-## 项目结构
+## Project structure
 
 ```text
 .
-├── manifest.json
+├── assets/
+│   ├── logo.svg
+│   └── demo.gif
 ├── content-core.js
 ├── content-dom.js
 ├── content-main.js
+├── manifest.json
 ├── style.css
 ├── README.md
+├── README.zh-CN.md
 ├── CHANGELOG.md
+├── RELEASE_NOTES.md
 ├── PRIVACY.md
-├── CONTRIBUTING.md
 ├── SECURITY.md
-└── .github/
-    └── ISSUE_TEMPLATE/
+├── CONTRIBUTING.md
+└── LICENSE
 ```
 
-## 开发
+## Development
 
-本项目当前无构建步骤。
+No build step is required.
 
-修改源码后：
+After editing the source:
 
-1. 打开 `chrome://extensions/`；
-2. 找到本扩展；
-3. 点击“重新加载”；
-4. 刷新 ChatGPT 页面。
+1. Open `chrome://extensions/`.
+2. Click **Reload** on this extension.
+3. Refresh the ChatGPT tab.
 
-建议提交 Bug 时附带：
+When reporting a compatibility bug, please include:
 
-- Chrome / Edge 版本；
-- Word / PowerPoint 版本；
-- ChatGPT 页面截图；
-- Toast 中“页面相交 / 实际写入”两个数字；
-- 可复现公式示例。
+- browser version;
+- Word / PowerPoint version;
+- a screenshot of the selected ChatGPT content;
+- the diagnostic toast values (`intersected / written`);
+- a minimal reproducible formula if possible.
 
 ## Roadmap
 
-- [ ] 提升新版 ChatGPT 自定义公式节点兼容性；
-- [ ] 更稳健的跨节点选区重建；
-- [ ] 扩展 LaTeX → MathML 语法覆盖；
-- [ ] 针对 Word / PowerPoint 分别优化剪贴板格式；
-- [ ] 增加自动化 DOM fixture 测试；
-- [ ] 增加可选调试面板；
-- [ ] Edge / Chrome 兼容性测试矩阵。
+- improve compatibility with future ChatGPT math DOM variants;
+- make cross-node selection reconstruction more robust;
+- broaden TeX → MathML coverage;
+- tune clipboard output separately for Word and PowerPoint;
+- add DOM fixture tests and regression cases;
+- provide an optional debug inspector;
+- expand the Chrome / Edge / Office compatibility matrix.
 
-## 非官方声明
+## Contributing
 
-本项目是独立的开源浏览器扩展，与 OpenAI、ChatGPT、Microsoft 无官方隶属、授权或背书关系。相关商标归各自权利人所有。
+Issues and pull requests are welcome. See [CONTRIBUTING.md](CONTRIBUTING.md).
+
+## Security
+
+For security-sensitive reports, follow [SECURITY.md](SECURITY.md) instead of posting sensitive details publicly.
 
 ## License
 
-This project is licensed under the **MIT License**.
+Licensed under the **MIT License**. You may use, modify, redistribute, and integrate this project in personal, academic, or commercial work, provided that the copyright notice and license text are retained. See [LICENSE](LICENSE).
 
-The MIT License was selected because this is a lightweight browser extension intended to be easy to adopt, inspect, modify, redistribute, and integrate into other workflows. It permits personal, academic, and commercial use, including modification and redistribution, provided that the copyright notice and license text are retained.
+## Disclaimer
 
-In practical terms, you may:
-
-- use the extension privately or commercially;
-- modify the source code;
-- redistribute original or modified versions;
-- include the code in a larger project;
-- publish forks and derivative work.
-
-The software is provided **“as is”**, without warranty of any kind. See [LICENSE](LICENSE) for the full license text.
+This is an independent open-source project. It is not affiliated with, endorsed by, or sponsored by OpenAI, ChatGPT, Microsoft, Word, or PowerPoint. All trademarks belong to their respective owners.
