@@ -89,7 +89,9 @@
 ```text
 .
 ├── manifest.json
-├── content.js
+├── content-core.js
+├── content-dom.js
+├── content-main.js
 ├── style.css
 ├── README.md
 ├── CHANGELOG.md
@@ -135,6 +137,16 @@
 
 ## License
 
-公开发布前请由仓库所有者选择许可证。对于希望允许自由使用、修改和再发布的轻量浏览器扩展，通常可考虑 **MIT License**；如果希望衍生版本继续开源，可考虑 GPL-3.0。
+This project is licensed under the **MIT License**.
 
-当前仓库包暂未主动替你选择许可证。
+The MIT License was selected because this is a lightweight browser extension intended to be easy to adopt, inspect, modify, redistribute, and integrate into other workflows. It permits personal, academic, and commercial use, including modification and redistribution, provided that the copyright notice and license text are retained.
+
+In practical terms, you may:
+
+- use the extension privately or commercially;
+- modify the source code;
+- redistribute original or modified versions;
+- include the code in a larger project;
+- publish forks and derivative work.
+
+The software is provided **“as is”**, without warranty of any kind. See [LICENSE](LICENSE) for the full license text.
