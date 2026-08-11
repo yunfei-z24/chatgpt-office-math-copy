@@ -1,0 +1,62 @@
+name: Publish v1.0.0
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/release.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    env:
+      TAG: v1.0.0
+      ZIP: chatgpt-office-math-copy-v1.0.0.zip
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Validate manifest version
+        shell: bash
+        run: |
+          python - <<'PY'
+          import json
+          with open('manifest.json', encoding='utf-8') as f:
+              data = json.load(f)
+          assert data['version'] == '1.0.0', data['version']
+          print('manifest version:', data['version'])
+          PY
+
+      - name: Build extension ZIP
+        shell: bash
+        run: |
+          rm -f "$ZIP"
+          zip -r "$ZIP" \
+            manifest.json \
+            content-core.js \
+            content-dom.js \
+            content-main.js \
+            style.css \
+            LICENSE \
+            README.md \
+            README.zh-CN.md \
+            PRIVACY.md
+          unzip -l "$ZIP"
+
+      - name: Create or update GitHub Release
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          if gh release view "$TAG" >/dev/null 2>&1; then
+            gh release upload "$TAG" "$ZIP" --clobber
+          else
+            gh release create "$TAG" "$ZIP" \
+              --target "$GITHUB_SHA" \
+              --title "v1.0.0 — Initial stable release" \
+              --notes-file RELEASE_NOTES.md
+          fi
