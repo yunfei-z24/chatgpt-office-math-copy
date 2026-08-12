@@ -2,6 +2,30 @@
 
 All notable changes to this project are documented here.
 
+## [1.0.3] - 2026-08-12
+
+### Fixed
+- Detect simple inline TeX expressions such as `q_i`, `x_i`, `P_m`, and `U^2` instead of dropping them from the Office clipboard output.
+- Always scan relevant inline math candidates within the selected range, rather than stopping after three obvious math nodes.
+- Map `\varnothing` and `\emptyset` to the true empty-set symbol `∅`.
+- Handle `\boxed{...}` without emitting the literal word `boxed` into Word or PowerPoint.
+- Added compatibility for `\xrightarrow`, `\xleftarrow`, `\overset`, `\underset`, `\cdots`, and `\ldots`.
+
+### Changed
+- Added `content-fixes.js` as a compatibility layer loaded after DOM extraction and before the main copy controller.
+
+## [1.0.2] - 2026-08-12
+
+### Fixed
+- Corrected the copy-button CSS selector so the button is visibly fixed above the ChatGPT composer.
+- Restored toast positioning and visibility.
+
+## [1.0.1] - 2026-08-12
+
+### Changed
+- Prefer ChatGPT's native copied Markdown/LaTeX as the primary source when available, with live-DOM MathML recovery as fallback.
+- Improved handling of annotated arrows and common TeX constructs.
+
 ## [1.0.0] - 2026-08-11
 
 ### Added
