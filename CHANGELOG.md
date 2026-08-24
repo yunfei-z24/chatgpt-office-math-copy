@@ -2,6 +2,15 @@
 
 All notable changes to this project are documented here.
 
+## [1.0.5] - 2026-08-24
+
+### Fixed
+- Prevent punctuation-only renderer spans such as commas, brackets, colons, and equals signs from becoming separate Office Math objects.
+- Merge token-level inline math fragments back into one MathML object for a complete inline expression, fixing misplaced commas and reordered symbols after PowerPoint paste.
+- Improve preservation of expressions such as `P(s=0,t)` and parameter vectors such as `\mu_{acc}=[P_0,\dot m_0,T_{in,0},...]`.
+- Use combining MathML accent marks for `\dot`, `\ddot`, and related accents to improve Office placement of over-dots.
+- Remove nested duplicate inline math records when a larger complete formula container has already been recovered.
+
 ## [1.0.4] - 2026-08-24
 
 ### Fixed
