@@ -1,14 +1,14 @@
 {
   "manifest_version": 3,
   "name": "ChatGPT Office Math Copy",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "Batch-copy ChatGPT text and multiple math formulas to Microsoft Word and PowerPoint with editable MathML-based structure.",
   "permissions": ["clipboardRead", "clipboardWrite"],
   "host_permissions": ["https://chatgpt.com/*", "https://chat.openai.com/*"],
   "content_scripts": [
     {
       "matches": ["https://chatgpt.com/*", "https://chat.openai.com/*"],
-      "js": ["content-core.js", "content-dom.js", "content-fixes.js", "content-main.js"],
+      "js": ["content-core.js", "content-dom.js", "content-fixes.js", "content-inline-fixes.js", "content-main.js"],
       "css": ["style.css"],
       "run_at": "document_idle"
     }
