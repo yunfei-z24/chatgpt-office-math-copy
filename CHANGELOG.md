@@ -2,6 +2,18 @@
 
 All notable changes to this project are documented here.
 
+## [1.0.4] - 2026-08-24
+
+### Fixed
+- Recover inline math and inline variables from the visible ChatGPT renderer when no TeX/MathML source is exposed on the node.
+- Preserve short inline expressions such as `s = 0`, `s = 1`, `P(s = 0,t)`, and similar scientific variables instead of dropping them during Office paste.
+- Added `\dot{...}` and `\ddot{...}` support using MathML accent structures, fixing time-derivative notation such as `\dot m_0`.
+- Added fallback support for common visible Unicode math glyphs, subscripts, superscripts, Greek symbols, set symbols, and relation operators when reconstructing inline MathML.
+- Prefer compact outer inline math wrappers to avoid duplicating nested renderer glyph spans.
+
+### Changed
+- Added `content-inline-fixes.js` after `content-fixes.js` and before `content-main.js`.
+
 ## [1.0.3] - 2026-08-12
 
 ### Fixed
