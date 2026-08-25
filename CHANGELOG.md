@@ -2,6 +2,14 @@
 
 All notable changes to this project are documented here.
 
+## [1.0.6] - 2026-08-25
+
+### Fixed
+- Prefer canonical TeX from `application/x-tex` annotations and data attributes when reconstructing formulas for Office, avoiding punctuation loss/reordering from visible DOM fragments.
+- Keep trailing sentence punctuation such as commas, periods, semicolons, and colons outside the MathML object so Word/PowerPoint places it on the normal text baseline rather than the mathematical axis.
+- Preserve internal punctuation in expressions such as `P(s=0,t)` while avoiding duplicated punctuation in display formulas.
+- Added a final Office-output normalization layer before the copy controller.
+
 ## [1.0.5] - 2026-08-24
 
 ### Fixed
