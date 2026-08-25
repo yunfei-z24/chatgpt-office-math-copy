@@ -2,6 +2,26 @@
 
 All notable changes to this project are documented here.
 
+## [1.2.0] - 2026-08-25
+
+### Changed
+- Replaced the v1.1.0 `<math>`-only scanner with formula-container detection for the current ChatGPT UI: `[data-math-source]`, `[data-math]`, `.katex-display`, `.katex`, `mjx-container`, `[role="math"]`, and native `<math>`.
+- Added pinned KaTeX 0.16.47 as a local vendored runtime. Formula source is converted locally to Presentation MathML; no remote conversion service or telemetry is used.
+- Prefer `data-math` / `data-math-source` and canonical `application/x-tex` annotations. Native MathML remains a fallback when source TeX is unavailable.
+- Stopped using the custom TeX parser and visible-glyph reconstruction pipeline for the active extension runtime.
+
+### Fixed
+- Preserve inline expressions such as `P(s=0,t)` including internal commas and symbol order.
+- Preserve structural fractions, superscripts, subscripts, Greek letters, `\dot{...}` accents, `\varnothing`, vectors, matrices, and other KaTeX-supported scientific notation.
+- Remove only terminal sentence punctuation from display equations; internal punctuation remains unchanged.
+- Remove punctuation stored by the page as an adjacent sibling after a display formula, preventing standalone comma/period lines in PowerPoint.
+- Detect a formula when the visible formula container intersects the selection even when the hidden MathML node itself does not intersect the browser selection.
+
+### Regression checks
+- Added an automated jsdom + KaTeX regression suite for current ChatGPT-style `data-math-source` containers.
+- Verified `P(s=0,t)`, display fraction/superscript structure, parameter-vector subscripts, `\dot m_0`, `\varnothing`, `q_i` superscripts, batch selection replacement, and display-equation punctuation removal.
+- GitHub Actions regression run passed before v1.2.0 was activated in `manifest.json`.
+
 ## [1.1.0] - 2026-08-25
 
 ### Changed
