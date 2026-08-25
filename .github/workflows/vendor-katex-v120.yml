@@ -1,0 +1,49 @@
+name: Build and verify v1.2.0
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/vendor-katex-v120.yml'
+      - 'content-v120.js'
+      - 'tests/test-v120.cjs'
+      - 'package.json'
+
+permissions:
+  contents: write
+
+jobs:
+  test-and-vendor:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Install pinned test dependencies
+        run: npm install --ignore-scripts
+
+      - name: Run regression suite
+        run: npm test
+
+      - name: Vendor pinned KaTeX runtime
+        run: |
+          mkdir -p vendor
+          cp node_modules/katex/dist/katex.min.js vendor/katex.min.js
+          cp node_modules/katex/LICENSE vendor/KATEX-LICENSE.txt
+
+      - name: Commit vendored runtime and lockfile
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add vendor/katex.min.js vendor/KATEX-LICENSE.txt package-lock.json
+          if git diff --cached --quiet; then
+            echo 'Vendored KaTeX already up to date.'
+          else
+            git commit -m 'Vendor KaTeX 0.16.47 for v1.2.0'
+            git push
+          fi
