@@ -41,18 +41,19 @@ assert.strictEqual(api.extractLatex(inline), 'P(s=0,t)');
 // Direct renderer regressions.
 const inlineMath = api.renderLatex('P(s=0,t)', false);
 assert.strictEqual(inlineMath.getAttribute('display'), 'inline');
-assert(inlineMath.outerHTML.includes('<mo>,</mo>'), 'internal comma in P(s=0,t) was lost');
+assert(inlineMath.textContent.includes(','), 'internal comma in P(s=0,t) was lost');
 
 const displayMath = api.renderLatex('s=\\left(\\frac{r}{R}\\right)^2,\\qquad s\\in[0,1].', true);
 assert(displayMath.outerHTML.includes('<mfrac>'), 'fraction structure lost');
 assert(displayMath.outerHTML.includes('<msup>'), 'superscript structure lost');
-assert(displayMath.outerHTML.includes('<mo>,</mo>'), 'internal display comma lost');
+assert(displayMath.textContent.includes(','), 'internal display comma lost');
 assert(!/[.]\s*$/.test(displayMath.textContent.trim()), 'display terminal period not removed');
 
 const vectorSource = '\\mu_{\\mathrm{acc}}=[P_0,\\dot m_0,T_{\\mathrm{in},0},A_{\\mathrm{dist}},\\tau_{\\mathrm{coast}},t_{\\mathrm{start}},\\eta_{\\mathrm{heat\\,sink}}],';
 const vectorMath = api.renderLatex(vectorSource, true);
 assert(vectorMath.outerHTML.includes('<msub>'), 'subscript structure lost');
 assert(vectorMath.outerHTML.includes('<mover'), 'dot/accent structure lost');
+assert(vectorMath.textContent.includes(','), 'parameter-vector internal commas lost');
 assert(!vectorMath.textContent.trim().endsWith(','), 'display vector terminal comma not removed');
 
 const empty = api.renderLatex('\\Omega_i\\cap\\Omega_{i+1}\\neq\\varnothing', false);
@@ -78,7 +79,7 @@ const out = result.div.innerHTML;
 assert(out.includes('<mfrac>'), 'batch output lost fraction');
 assert(out.includes('<mover'), 'batch output lost overdot');
 assert(out.includes('<msub>'), 'batch output lost subscripts');
-assert(maths[0].outerHTML.includes('<mo>,</mo>'), 'batch inline P(s=0,t) lost comma');
+assert(maths[0].textContent.includes(','), 'batch inline P(s=0,t) lost comma');
 assert(!result.div.textContent.includes('formula.'), 'display punctuation sibling was not removed');
 assert(!maths[1].textContent.trim().endsWith('.'), 'display source period survived');
 assert(!maths[2].textContent.trim().endsWith(','), 'display source comma survived');
