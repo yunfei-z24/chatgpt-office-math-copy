@@ -1,4 +1,4 @@
-name: Build and verify v1.2.0
+name: Build and verify v1.2.1
 
 on:
   push:
@@ -6,7 +6,9 @@ on:
     paths:
       - '.github/workflows/vendor-katex-v120.yml'
       - 'content-v120.js'
+      - 'content-v121-office-punct.js'
       - 'tests/test-v120.cjs'
+      - 'tests/test-v121-office-punct.cjs'
       - 'package.json'
 
 permissions:
@@ -44,6 +46,6 @@ jobs:
           if git diff --cached --quiet; then
             echo 'Vendored KaTeX already up to date.'
           else
-            git commit -m 'Vendor KaTeX 0.16.47 for v1.2.0'
+            git commit -m 'Vendor KaTeX 0.16.47 for v1.2.1'
             git push
           fi
