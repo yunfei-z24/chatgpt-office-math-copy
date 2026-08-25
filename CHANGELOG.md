@@ -2,6 +2,24 @@
 
 All notable changes to this project are documented here.
 
+## [1.1.0] - 2026-08-25
+
+### Changed
+- Replaced the layered 1.0.x heuristic reconstruction pipeline with a single stable native-MathML pipeline.
+- The extension now preserves ChatGPT's existing Presentation MathML directly instead of rebuilding formulas from visible text, ARIA labels, or token fragments.
+- Legacy compatibility scripts from v1.0.3-v1.0.7 remain in the repository for history but are no longer loaded by `manifest.json`.
+
+### Fixed
+- Preserve structural math such as fractions, superscripts, subscripts, accents, Greek symbols, and internal punctuation exactly as represented by the source MathML.
+- Preserve inline punctuation inside formulas such as `P(s=0,t)` without token reordering or dropped commas.
+- Preserve accent structures such as `\dot m_0` by copying the existing MathML accent tree instead of recreating it.
+- Remove terminal sentence punctuation from display equations only, per project preference; internal commas and punctuation remain untouched.
+- Remove adjacent duplicated punctuation after display equations in the cloned Office HTML payload.
+
+### Regression checks
+- Verified JavaScript syntax with `node --check`.
+- Verified MathML structure for a display fraction/superscript case, inline `P(s=0,t)`, and a parameter vector containing subscripts and an over-dot.
+
 ## [1.0.7] - 2026-08-25
 
 ### Fixed
