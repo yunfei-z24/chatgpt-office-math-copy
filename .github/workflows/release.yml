@@ -1,5 +1,5 @@
-# Release workflow for the first stable public build.
-name: Publish v1.0.0
+# Release workflow for the current tested public build.
+name: Publish v1.2.0
 
 on:
   push:
@@ -15,20 +15,22 @@ jobs:
   release:
     runs-on: ubuntu-latest
     env:
-      TAG: v1.0.0
-      ZIP: chatgpt-office-math-copy-v1.0.0.zip
+      TAG: v1.2.0
+      ZIP: chatgpt-office-math-copy-v1.2.0.zip
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Validate manifest version
+      - name: Validate manifest version and required runtime
         shell: bash
         run: |
           python - <<'PY'
-          import json
+          import json, pathlib
           with open('manifest.json', encoding='utf-8') as f:
               data = json.load(f)
-          assert data['version'] == '1.0.0', data['version']
+          assert data['version'] == '1.2.0', data['version']
+          for p in ['content-v120.js', 'vendor/katex.min.js', 'vendor/KATEX-LICENSE.txt', 'style.css']:
+              assert pathlib.Path(p).is_file(), p
           print('manifest version:', data['version'])
           PY
 
@@ -38,14 +40,15 @@ jobs:
           rm -f "$ZIP"
           zip -r "$ZIP" \
             manifest.json \
-            content-core.js \
-            content-dom.js \
-            content-main.js \
+            content-v120.js \
+            vendor/katex.min.js \
+            vendor/KATEX-LICENSE.txt \
             style.css \
             LICENSE \
             README.md \
             README.zh-CN.md \
-            PRIVACY.md
+            PRIVACY.md \
+            CHANGELOG.md
           unzip -l "$ZIP"
 
       - name: Create or update GitHub Release
@@ -58,6 +61,6 @@ jobs:
           else
             gh release create "$TAG" "$ZIP" \
               --target "$GITHUB_SHA" \
-              --title "v1.0.0 — Initial stable release" \
+              --title "v1.2.0 — Current ChatGPT formula-container support" \
               --notes-file RELEASE_NOTES.md
           fi
