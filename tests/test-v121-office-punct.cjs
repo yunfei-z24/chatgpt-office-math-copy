@@ -40,6 +40,12 @@ function parseMath(html) {
   return d.querySelector('math');
 }
 
+function presentationText(math) {
+  const clone = math.cloneNode(true);
+  clone.querySelectorAll('annotation,annotation-xml').forEach(x => x.remove());
+  return clone.textContent.replace(/\s+/g, '');
+}
+
 // 1) This is the exact failure seen in PowerPoint: P(s=0,t) became P(s=0t).
 const rawP = katexMath('P(s=0,t)');
 assert(/<mo[^>]*separator="true"[^>]*>\s*,\s*<\/mo>/.test(rawP),
@@ -49,8 +55,8 @@ assert(fixedP.includes('<mtext data-cgo-office-punct="1">,</mtext>'),
   'P(s=0,t) comma was not converted to an Office-safe mtext run');
 assert(!/<mo[^>]*separator="true"[^>]*>\s*,\s*<\/mo>/.test(fixedP),
   'separator=true comma survived normalization');
-assert.strictEqual(parseMath(fixedP).textContent.replace(/\s+/g, ''), 'P(s=0,t)',
-  'P(s=0,t) textual order changed during normalization');
+assert.strictEqual(presentationText(parseMath(fixedP)), 'P(s=0,t)',
+  'P(s=0,t) Presentation MathML order changed during normalization');
 
 // 2) Parameter vectors: all internal commas must survive and become mtext.
 const vecTex = String.raw`\mu_{\mathrm{acc}}=[P_0,\dot m_0,T_{\mathrm{in},0},A_{\mathrm{dist}},\tau_{\mathrm{coast}},t_{\mathrm{start}},\eta_{\mathrm{heat\,sink}}]`;
@@ -62,6 +68,8 @@ const vecCommas = [...vecDoc.querySelectorAll('math mtext[data-cgo-office-punct=
 assert(vecCommas.length >= 6, `parameter vector retained only ${vecCommas.length} protected commas`);
 assert(!vecDoc.querySelector('math mo[separator="true"]'),
   'parameter vector still contains Office-risk separator operators');
+assert(presentationText(vecDoc.querySelector('math')).includes('P0,m˙0,Tin,0'),
+  'parameter-vector comma ordering changed');
 
 // 3) Display formula: internal comma remains, while v1.2.0 is responsible for
 // removing sentence-final punctuation before this adapter runs.
@@ -77,8 +85,8 @@ assert([...displayDoc.querySelectorAll('mtext[data-cgo-office-punct="1"]')]
 const rawDecimal = katexMath(String.raw`x=0.125+y`);
 const fixedDecimal = api.normalizeOfficeMathHTML(rawDecimal);
 const decimalMath = parseMath(fixedDecimal);
-assert(decimalMath.textContent.includes('0.125'), 'decimal point was altered');
-assert(decimalMath.textContent.includes('+'), 'ordinary operator was altered');
+assert(presentationText(decimalMath).includes('0.125'), 'decimal point was altered');
+assert(presentationText(decimalMath).includes('+'), 'ordinary operator was altered');
 
 console.log('v1.2.1 Office punctuation regression suite: PASS');
 console.log('checked: KaTeX separator comma -> mtext, P(s=0,t), parameter vectors, display fractions/powers, decimal safety');
