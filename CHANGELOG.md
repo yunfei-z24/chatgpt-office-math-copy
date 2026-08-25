@@ -2,6 +2,16 @@
 
 All notable changes to this project are documented here.
 
+## [1.0.7] - 2026-08-25
+
+### Fixed
+- Removed the v1.0.6 strategy that externalized display-equation punctuation into ordinary HTML, which could force commas or periods onto a separate PowerPoint line.
+- Prefer semantic MathML or real TeX annotations/data attributes; use the actually visible formula text only for simple inline formulas when ARIA text is incomplete.
+- Preserve internal punctuation in inline expressions such as `P(s=0,t)` and parameter vectors.
+- Deduplicate punctuation that exists both inside the MathML object and as a cloned sibling text node.
+- Move punctuation following display equations into the same editable MathML object so it remains on the correct mathematical baseline.
+- Added `content-v107-fixes.js` as the final punctuation-preserving compatibility layer.
+
 ## [1.0.6] - 2026-08-25
 
 ### Fixed
