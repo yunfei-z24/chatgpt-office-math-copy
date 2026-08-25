@@ -1,0 +1,13 @@
+{
+  "name": "chatgpt-office-math-copy",
+  "version": "1.2.0",
+  "private": true,
+  "description": "Development and regression-test dependencies for ChatGPT Office Math Copy.",
+  "scripts": {
+    "test": "node tests/test-v120.cjs"
+  },
+  "devDependencies": {
+    "jsdom": "22.1.0",
+    "katex": "0.16.47"
+  }
+}
