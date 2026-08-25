@@ -1,14 +1,14 @@
 {
   "manifest_version": 3,
   "name": "ChatGPT Office Math Copy",
-  "version": "1.2.0",
-  "description": "Batch-copy ChatGPT text and multiple math formulas to Microsoft Word and PowerPoint using current ChatGPT formula sources and KaTeX-generated Presentation MathML.",
+  "version": "1.2.1",
+  "description": "Batch-copy ChatGPT text and multiple math formulas to Microsoft Word and PowerPoint using current ChatGPT formula sources, KaTeX-generated Presentation MathML, and Office-safe internal punctuation normalization.",
   "permissions": ["clipboardRead", "clipboardWrite"],
   "host_permissions": ["https://chatgpt.com/*", "https://chat.openai.com/*"],
   "content_scripts": [
     {
       "matches": ["https://chatgpt.com/*", "https://chat.openai.com/*"],
-      "js": ["vendor/katex.min.js", "content-v120.js"],
+      "js": ["vendor/katex.min.js", "content-v120.js", "content-v121-office-punct.js"],
       "css": ["style.css"],
       "run_at": "document_idle"
     }
