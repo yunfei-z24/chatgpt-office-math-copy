@@ -1,5 +1,5 @@
 # Release workflow for the current tested public build.
-name: Publish v1.2.1
+name: Publish v1.2.2
 
 on:
   push:
@@ -15,8 +15,8 @@ jobs:
   release:
     runs-on: ubuntu-latest
     env:
-      TAG: v1.2.1
-      ZIP: chatgpt-office-math-copy-v1.2.1.zip
+      TAG: v1.2.2
+      ZIP: chatgpt-office-math-copy-v1.2.2.zip
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -62,6 +62,6 @@ jobs:
           else
             gh release create "$TAG" "$ZIP" \
               --target "$GITHUB_SHA" \
-              --title "v1.2.1 — Office-safe internal punctuation hotfix" \
+              --title "v1.2.2 — Robust current-ChatGPT selection scope" \
               --notes-file RELEASE_NOTES.md
           fi
