@@ -301,23 +301,37 @@
     return { div, found: records.length, written, sourceCounts };
   }
 
-  function looksLikeTurn(el) {
-    if (!el || el.nodeType !== 1) return false;
-    const role = (el.getAttribute('data-message-author-role') || el.getAttribute('data-turn') || '').toLowerCase();
-    const testid = (el.getAttribute('data-testid') || '').toLowerCase();
-    return role === 'assistant' || testid.startsWith('conversation-turn') || el.tagName === 'ARTICLE';
+  function elementOf(node) {
+    return node?.nodeType === Node.ELEMENT_NODE ? node : node?.parentElement || null;
   }
 
-  function findMessage(node) {
-    let el = node?.nodeType === 1 ? node : node?.parentElement;
-    for (let i = 0; el && el !== document.body && i < 18; i++, el = el.parentElement) {
-      if ((el.getAttribute?.('data-message-author-role') || '').toLowerCase() === 'assistant') {
-        return el.closest('article,[data-testid^="conversation-turn"]') || el;
-      }
-      if (looksLikeTurn(el) && el.querySelector?.('[data-message-author-role="assistant"]')) return el;
+  function closestTurn(node) {
+    const el = elementOf(node);
+    if (!el?.closest) return null;
+    return el.closest(
+      'article,[data-testid^="conversation-turn"],[data-turn],[data-message-id],[data-message-author-role]'
+    );
+  }
+
+  function findScope(range) {
+    // Current ChatGPT no longer guarantees data-message-author-role="assistant".
+    // The browser selection itself is authoritative, so never fail only because
+    // an author-role attribute disappeared.
+    const startTurn = closestTurn(range?.startContainer);
+    const endTurn = closestTurn(range?.endContainer);
+    if (startTurn && startTurn === endTurn) return startTurn;
+
+    let common = elementOf(range?.commonAncestorContainer);
+    if (common) {
+      const commonTurn = closestTurn(common);
+      if (commonTurn) return commonTurn;
+      if (common !== document.body && common !== document.documentElement) return common;
     }
-    const xs = [...document.querySelectorAll('[data-message-author-role="assistant"]')];
-    return xs.length ? xs[xs.length - 1] : null;
+
+    // A selection may span wrappers whose structure changes between ChatGPT
+    // releases. Formula inclusion is still constrained by Range.intersectsNode,
+    // so using main/body as a fallback does not copy formulas outside the range.
+    return document.querySelector('main') || document.body || document.documentElement;
   }
 
   async function writeClipboard(html, plain) {
@@ -343,8 +357,7 @@
       const sel = window.getSelection();
       if (!sel || !sel.rangeCount || sel.isCollapsed) throw new Error('请先框选要复制的内容');
       const range = sel.getRangeAt(0).cloneRange();
-      const msg = findMessage(range.commonAncestorContainer);
-      if (!msg) throw new Error('未定位到 ChatGPT 回答');
+      const msg = findScope(range);
 
       const { div, found, written, sourceCounts } = cloneRangeWithMath(range, msg);
       if (!found) throw new Error('选区中没有检测到 ChatGPT/KaTeX 公式容器');
@@ -355,7 +368,7 @@
         `已复制 ${written} 个公式：KaTeX 源 ${sourceCounts.katex}，原生 MathML ${sourceCounts.native}；行间公式末尾标点已删除`
       );
     } catch (e) {
-      console.error('[CGO v1.2.0]', e);
+      console.error('[CGO v1.2.2]', e);
       toast(`复制失败：${e.message}`, true);
     }
   }
@@ -366,7 +379,7 @@
     b.id = 'cgo-office-copy-btn';
     b.type = 'button';
     b.textContent = '复制整段到 Office';
-    b.title = 'v1.2.0：识别新版 ChatGPT 公式容器，并使用 KaTeX 生成 Presentation MathML。';
+    b.title = 'v1.2.2：选区驱动的回答作用域定位 + KaTeX Presentation MathML。';
     b.addEventListener('click', copyBatch);
     document.body.appendChild(b);
   }
@@ -379,7 +392,8 @@
     isDisplay,
     renderLatex,
     collect,
-    cloneRangeWithMath
+    cloneRangeWithMath,
+    findScope
   };
 
   install();
